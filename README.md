@@ -2,29 +2,33 @@
 Customisable logic gate sim, with one fundamental part: the nand gate
 
 Specification for data:
+Gates represented the easiest way - unevaluated clojure code. The only available functions are ones that already exist in our table, that can be read from a file, or defaults to only containing the following nand function
 
-Logic gates:
-    Stored in a map, name and corresponding function in data form.
-    We need function to translate between data and code, parse the map from top down and replace keywords with vectors, then convert data to code
-    We can have 1 map with code and one with definitions, although this means we might not synchronise properly
-
-Example
 (def core/nand-hidden (fn [a b] (bit-and-not a b)))
+
+This makes program minimal and less error prone, as clojure evaluator handles the heavy lifting. I will have to work out a way for the GUI to write the clojure code, and most importantly to construct wires as they are not stored
+
+For GUI to clojure:
+    Each input block will be treated as a parameter
+    Output block will be return value
+    Each gate has input nodes and exit node
+    Wire connecting to input node will put everything connected from the wire into the parameter of the gate
+    Wire connecting from output node will not need to be considered, so we evaluate whole diagram from left to right
+
+    We will have one function to compile a gate to clojure code.
 
 Input block is changeable by user
 (def core/input-block {:state 0}) ;consider making these one def, these might have to be mutable
 (def core/output-block {:state 0})
 Output block is attached to a gate
 
-{:nand #(core/nand-hidden % %)
- :not '(:nand 'a 'a)
- :and '(:not '(:nand 'a 'b))
-}
+Think about ways for using this immutably, although having it atomic is not a bad compromise
 
-Think about ways for usnig this immutably, although having it atomic is not a bad compromise
+The gates are stored in a map:
+{:nand [nil core/nand]
+ :not ['(fn [a] (:nand a a)) (fn [a] (core/nand a a))]}
 
-The gates are stored in a data map and then converted to a function, where the values are a vector
-The first element of the vector is a list, the second is a corresponding function
+The first element of the vector is an unevaluated S-expression, the second is a corresponding function
 As gates are created from just data, or read in, at the same time a function produces the code equivalent
 All we need is one function to produce a truth table when we want to evaluate the results
 The truth table function works on the code element of the vector, while we can read/write the data version
@@ -46,11 +50,12 @@ Heirarchy:
     each screen is a new gate, composed of other previously built gates
     gates can be imported and selected from menu
     gates are stored in edn file
-    figure way to convert function to static data structure and back
+    figure way to convert function - function is unevaluated clojure S-expr with keywords instead of function names
+        all I have to do is write code to replace the keywords when running and the clojure evaluator does the rest of the checking (maybe I should test a couple things if I have motivation)
 
 Steps:
-    Backend - work out data structure
-              convert between data structure and code
+    Backend - work out data structure DONE
+              convert between data structure and code IN PROGRESS
               loading and saving data to and from files
               create GUI
               link up GUI objects to data structure

@@ -8,11 +8,7 @@
 
 (deftest create-gate
   (testing "creating new gate maps"
-    (is (= (last (:not defs/with-not)) (fn [a] (core/nand a a))))
-    (is (last (:not (core/new-gate core/gates :not '(:nand 'a)))) (fn [a] (core/nand a a)))
-    (is (last (:not (core/new-gate core/gates :not '(:nand 'a 'a)))) (fn [a] (core/nand a a)))
-    (is (last (:not (core/new-gate core/gates :not '(:nand 'a 'b)))) (fn [a b] (core/nand a b)))
-    (is (last (:not (core/new-gate core/gates :not '(:nand 'a 'b 'c)))) "too many parameters")))
+    (is (= (defs/get-arity (:not (last (first defs/with-not)))) 1)))) ;change test to see if new function evaluates as expected
 
 (deftest read-gates)
 

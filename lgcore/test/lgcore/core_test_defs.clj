@@ -9,9 +9,7 @@
 (defn get-k-fn [kw m]
   (last (kw m)))
 
-(def with-not {:nand core/nand
-               :not ['(:nand 'a) (fn [a] (core/nand a a))]})
+(def with-nand {:nand core/nand})
 
-(def with-and (assoc with-not :and ['(:not '(:nand 'a 'b)) (fn [a b] ((get-k-fn :not with-not) (core/nand a b)))])) ;consider using let when certain bits get reused 
-
+(def with-not [(core/create-gate with-nand :not '(fn [a] (:nand a a)))]) ;figure out what to test
 
