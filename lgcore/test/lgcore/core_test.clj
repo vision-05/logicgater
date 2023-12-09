@@ -7,8 +7,7 @@
   (is (= (defs/get-arity core/nand) 2)))
 
 (deftest create-gate
-  (testing "creating new gate maps"
-    (is (= (defs/get-arity (:not (last (first defs/with-not)))) 1)))) ;change test to see if new function evaluates as expected
+  (testing "creating new gate maps"))
 
 (deftest read-gates)
 

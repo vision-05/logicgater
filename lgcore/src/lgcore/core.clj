@@ -1,24 +1,27 @@
 (ns lgcore.core
   (:gen-class))
 
+(def nand-internal {"00" 1
+                    "10" 1
+                    "01" 1
+                    "11" 0})
 
 (defn nand [a b]
-  (bit-and-not a b))
+  (nand-internal (str a b)))
 
-(def gates {:nand nand})
+(def gates {:nand nand
+            :not (fn [m a] ((:nand m) a a))
+            :and (fn [m a b] ((:not m) m ((:nand m) a b)))})
 
-;;ERRORS: keyword doesn't exist
-(defn replace-kw-single [m ls] ;for a single level list
-  (conj (rest ls) ((first ls) m)))
-
-;function to go through list and replace all kws
-(defn replace-all-kw [m ls]
-  ())
+(defn eval-gate [m k & args]
+  (apply (k m) m args))
 
 (defn create-gate [m k ls]
-  (assoc m k [ls (eval (replace-all-kw m ls))]))
+  ())
+
+(defn truth-table [m k] ())
 
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!"))
+  (println (eval-gate gates :not 0) (nand 1 0) (eval-gate gates :and 1 1)))
